@@ -6,6 +6,14 @@ import type {
   SchemeRecord
 } from "./types";
 
+const baseUrl = import.meta.env.BASE_URL || "/";
+
+function withBase(path: string): string {
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${normalizedBase}${normalizedPath}`;
+}
+
 async function request<T>(path: string): Promise<T> {
   const response = await fetch(path);
   if (!response.ok) {
@@ -25,7 +33,7 @@ async function requestWithFallback<T>(apiPath: string, fallbackPath: string): Pr
 export async function getLiveAirQuality(): Promise<AirQualityRecord[]> {
   const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
     "/api/air-quality/live",
-    "/demo/air_quality_live.json"
+    withBase("demo/air_quality_live.json")
   );
   return payload.records;
 }
@@ -33,7 +41,7 @@ export async function getLiveAirQuality(): Promise<AirQualityRecord[]> {
 export async function getHistoricalAirQuality(): Promise<AirQualityRecord[]> {
   const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
     "/api/air-quality/historical",
-    "/demo/air_quality_historical.json"
+    withBase("demo/air_quality_historical.json")
   );
   return payload.records;
 }
@@ -41,7 +49,7 @@ export async function getHistoricalAirQuality(): Promise<AirQualityRecord[]> {
 export async function getRainfallData(): Promise<RainfallRecord[]> {
   const payload = await requestWithFallback<{ records: RainfallRecord[] }>(
     "/api/weather/rainfall",
-    "/demo/rainfall.json"
+    withBase("demo/rainfall.json")
   );
   return payload.records;
 }
@@ -49,7 +57,7 @@ export async function getRainfallData(): Promise<RainfallRecord[]> {
 export async function getAccidentData(): Promise<AccidentRecord[]> {
   const payload = await requestWithFallback<{ records: AccidentRecord[] }>(
     "/api/accidents",
-    "/demo/accidents.json"
+    withBase("demo/accidents.json")
   );
   return payload.records;
 }
@@ -73,7 +81,7 @@ export async function getSchemeData(query?: {
   const suffix = params.toString() ? `?${params.toString()}` : "";
   const payload = await requestWithFallback<{ records: SchemeRecord[] }>(
     `/api/schemes${suffix}`,
-    "/demo/schemes.json"
+    withBase("demo/schemes.json")
   );
 
   if (!query?.sector && !query?.beneficiary_type && !query?.ministry) {
@@ -96,5 +104,5 @@ export async function getSchemeData(query?: {
 }
 
 export async function getInsights(): Promise<Insights> {
-  return requestWithFallback<Insights>("/api/insights", "/demo/insights.json");
+  return requestWithFallback<Insights>("/api/insights", withBase("demo/insights.json"));
 }
