@@ -34,6 +34,31 @@ app.add_middleware(
 )
 
 
+def _matches_location(record: dict[str, Any], region: str | None, pincode: str | None) -> bool:
+    if not region and not pincode:
+        return True
+
+    values = [str(value).lower() for value in record.values() if value is not None]
+    searchable = " ".join(values)
+
+    region_match = True
+    if region:
+        region_match = region.lower() in searchable
+
+    pincode_match = True
+    if pincode:
+        digits = "".join(ch for ch in pincode if ch.isdigit())
+        pincode_match = digits and digits in searchable
+
+    return bool(region_match and pincode_match)
+
+
+def _filter_records_by_location(
+    records: list[dict[str, Any]], region: str | None, pincode: str | None
+) -> list[dict[str, Any]]:
+    return [record for record in records if _matches_location(record, region, pincode)]
+
+
 def _get_dataset(dataset_name: str, force_refresh: bool = False) -> dict[str, Any]:
     if dataset_name not in RESOURCE_MAP:
         raise HTTPException(status_code=404, detail=f"Unknown dataset: {dataset_name}")
@@ -68,30 +93,34 @@ def refresh_all(limit: int = Query(default=1000, ge=10, le=10000)) -> dict[str, 
 
 
 @app.get("/api/air-quality/live")
-def get_live_air_quality() -> dict[str, Any]:
+def get_live_air_quality(region: str | None = None, pincode: str | None = None) -> dict[str, Any]:
     payload = _get_dataset("air_quality_live")
     records = normalize_air_quality(payload.get("records", []))
+    records = _filter_records_by_location(records, region, pincode)
     return {"count": len(records), "records": records, "fetched_at": payload.get("fetched_at")}
 
 
 @app.get("/api/air-quality/historical")
-def get_historical_air_quality() -> dict[str, Any]:
+def get_historical_air_quality(region: str | None = None, pincode: str | None = None) -> dict[str, Any]:
     payload = _get_dataset("air_quality_historical")
     records = normalize_air_quality(payload.get("records", []))
+    records = _filter_records_by_location(records, region, pincode)
     return {"count": len(records), "records": records, "fetched_at": payload.get("fetched_at")}
 
 
 @app.get("/api/weather/rainfall")
-def get_rainfall() -> dict[str, Any]:
+def get_rainfall(region: str | None = None, pincode: str | None = None) -> dict[str, Any]:
     payload = _get_dataset("weather_rainfall")
     records = normalize_rainfall(payload.get("records", []))
+    records = _filter_records_by_location(records, region, pincode)
     return {"count": len(records), "records": records, "fetched_at": payload.get("fetched_at")}
 
 
 @app.get("/api/accidents")
-def get_accidents() -> dict[str, Any]:
+def get_accidents(region: str | None = None, pincode: str | None = None) -> dict[str, Any]:
     payload = _get_dataset("road_accidents")
     records = normalize_accidents(payload.get("records", []))
+    records = _filter_records_by_location(records, region, pincode)
     return {"count": len(records), "records": records, "fetched_at": payload.get("fetched_at")}
 
 
@@ -135,11 +164,29 @@ def get_infrastructure() -> dict[str, Any]:
     }
 
 
-@app.get("/api/insights")
-def get_insights() -> dict[str, Any]:
+@app.get("/api/location-options")
+def get_location_options() -> dict[str, Any]:
     air = normalize_air_quality(_get_dataset("air_quality_live").get("records", []))
     rain = normalize_rainfall(_get_dataset("weather_rainfall").get("records", []))
     accidents = normalize_accidents(_get_dataset("road_accidents").get("records", []))
+
+    merged = air + rain + accidents
+    regions = sorted({row.get("region", "").strip() for row in merged if row.get("region")})
+    pincodes = sorted({row.get("pincode", "").strip() for row in merged if row.get("pincode")})
+
+    return {"regions": regions, "pincodes": pincodes}
+
+
+@app.get("/api/insights")
+def get_insights(region: str | None = None, pincode: str | None = None) -> dict[str, Any]:
+    air = normalize_air_quality(_get_dataset("air_quality_live").get("records", []))
+    rain = normalize_rainfall(_get_dataset("weather_rainfall").get("records", []))
+    accidents = normalize_accidents(_get_dataset("road_accidents").get("records", []))
+
+    air = _filter_records_by_location(air, region, pincode)
+    rain = _filter_records_by_location(rain, region, pincode)
+    accidents = _filter_records_by_location(accidents, region, pincode)
+
     return compute_civic_insights(air, rain, accidents)
 
 

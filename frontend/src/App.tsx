@@ -4,6 +4,7 @@ import {
   getHistoricalAirQuality,
   getInsights,
   getLiveAirQuality,
+  getLocationOptions,
   getRainfallData,
   getSchemeData
 } from "./api";
@@ -16,9 +17,15 @@ import type {
   AccidentRecord,
   AirQualityRecord,
   Insights,
+  LocationOptions,
   RainfallRecord,
   SchemeRecord
 } from "./types";
+
+interface LocationFilter {
+  region?: string;
+  pincode?: string;
+}
 
 export default function App() {
   const [liveAqi, setLiveAqi] = useState<AirQualityRecord[]>([]);
@@ -27,21 +34,25 @@ export default function App() {
   const [accidents, setAccidents] = useState<AccidentRecord[]>([]);
   const [schemes, setSchemes] = useState<SchemeRecord[]>([]);
   const [insights, setInsights] = useState<Insights | null>(null);
+  const [locationOptions, setLocationOptions] = useState<LocationOptions>({ regions: [], pincodes: [] });
+  const [regionInput, setRegionInput] = useState("");
+  const [pincodeInput, setPincodeInput] = useState("");
+  const [activeFilter, setActiveFilter] = useState<LocationFilter>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadData() {
+  async function loadData(filter?: LocationFilter) {
     setLoading(true);
     setError(null);
     try {
       const [aqiLiveResp, aqiHistResp, rainfallResp, accidentResp, schemesResp, insightsResp] =
         await Promise.all([
-          getLiveAirQuality(),
-          getHistoricalAirQuality(),
-          getRainfallData(),
-          getAccidentData(),
+          getLiveAirQuality(filter),
+          getHistoricalAirQuality(filter),
+          getRainfallData(filter),
+          getAccidentData(filter),
           getSchemeData(),
-          getInsights()
+          getInsights(filter)
         ]);
 
       setLiveAqi(aqiLiveResp);
@@ -67,8 +78,27 @@ export default function App() {
   }
 
   useEffect(() => {
-    loadData();
+    loadData(activeFilter);
+  }, [activeFilter]);
+
+  useEffect(() => {
+    getLocationOptions()
+      .then((response) => setLocationOptions(response))
+      .catch(() => setLocationOptions({ regions: [], pincodes: [] }));
   }, []);
+
+  function applyLocationFilter() {
+    setActiveFilter({
+      region: regionInput.trim() || undefined,
+      pincode: pincodeInput.trim() || undefined
+    });
+  }
+
+  function clearLocationFilter() {
+    setRegionInput("");
+    setPincodeInput("");
+    setActiveFilter({});
+  }
 
   const summary = useMemo(
     () => ({
@@ -120,6 +150,47 @@ export default function App() {
           <h3>{summary.schemes}</h3>
           <p>Schemes discovered</p>
         </div>
+      </section>
+
+      <section className="card">
+        <h2>Regional / Pincode Stats</h2>
+        <div className="filters">
+          <input
+            type="text"
+            list="region-options"
+            placeholder="Enter region / locality / district"
+            value={regionInput}
+            onChange={(e) => setRegionInput(e.target.value)}
+          />
+          <datalist id="region-options">
+            {locationOptions.regions.map((region) => (
+              <option key={region} value={region} />
+            ))}
+          </datalist>
+
+          <input
+            type="text"
+            list="pincode-options"
+            placeholder="Enter pincode (if available)"
+            value={pincodeInput}
+            onChange={(e) => setPincodeInput(e.target.value)}
+          />
+          <datalist id="pincode-options">
+            {locationOptions.pincodes.map((pincode) => (
+              <option key={pincode} value={pincode} />
+            ))}
+          </datalist>
+
+          <button onClick={applyLocationFilter}>Apply Location Filter</button>
+          <button className="secondary" onClick={clearLocationFilter}>
+            Clear
+          </button>
+        </div>
+        <p className="subtle">
+          Active filter: <strong>{activeFilter.region || "All regions"}</strong>, pincode{" "}
+          <strong>{activeFilter.pincode || "Any"}</strong>. Historical views are filtered where dataset
+          location fields are available.
+        </p>
       </section>
 
       <MapView data={liveAqi} />

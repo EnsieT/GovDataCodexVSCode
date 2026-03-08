@@ -111,11 +111,20 @@ Frontend available at:
 - `GET /api/air-quality/historical`
 - `GET /api/weather/rainfall`
 - `GET /api/accidents`
+- `GET /api/location-options`
 - `GET /api/schemes?sector=&beneficiary_type=&ministry=`
 - `GET /api/infrastructure`
 - `GET /api/insights`
 - `GET /api/export/{dataset_name}.csv`
 - `POST /api/refresh`
+
+Location-aware query support is available for:
+
+- `/api/air-quality/live?region=&pincode=`
+- `/api/air-quality/historical?region=&pincode=`
+- `/api/weather/rainfall?region=&pincode=`
+- `/api/accidents?region=&pincode=`
+- `/api/insights?region=&pincode=`
 
 ## Features implemented
 
@@ -128,6 +137,7 @@ Frontend available at:
 - Scheme discovery filters by sector, beneficiary type, ministry
 - Civic insights panel with automatic top findings
 - Historical AQI time slider
+- Regional and pincode filter panel for current and historical stats
 - CSV export endpoint
 - Daily automated refresh workflow (`.github/workflows/daily-data-refresh.yml`)
 

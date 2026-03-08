@@ -14,6 +14,14 @@ def _to_numeric(value: Any) -> float | None:
         return None
 
 
+def _pick_first(item: dict[str, Any], keys: list[str], default: str = "") -> str:
+    for key in keys:
+        value = item.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return default
+
+
 def normalize_air_quality(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     cleaned: list[dict[str, Any]] = []
     for item in records:
@@ -31,6 +39,8 @@ def normalize_air_quality(records: list[dict[str, Any]]) -> list[dict[str, Any]]
             {
                 "station": item.get("station", "Unknown"),
                 "city": item.get("city", ""),
+                "region": _pick_first(item, ["region", "city", "location", "area", "station"]),
+                "pincode": _pick_first(item, ["pincode", "pin_code", "pin", "postal_code"]),
                 "pollutant_id": item.get("pollutant_id", "NA"),
                 "pollutant_avg": avg,
                 "last_update": item.get("last_update"),
@@ -46,6 +56,8 @@ def normalize_rainfall(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         cleaned.append(
             {
                 "station": item.get("station", "Unknown"),
+                "region": _pick_first(item, ["region", "district", "city", "state", "station"]),
+                "pincode": _pick_first(item, ["pincode", "pin_code", "pin", "postal_code"]),
                 "date": item.get("date"),
                 "rainfall": _to_numeric(item.get("rainfall")),
                 "temperature": _to_numeric(item.get("temperature")),
@@ -61,6 +73,8 @@ def normalize_accidents(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             {
                 "state": item.get("state", ""),
                 "district": item.get("district", "Unknown"),
+                "region": _pick_first(item, ["district", "region", "city", "state"]),
+                "pincode": _pick_first(item, ["pincode", "pin_code", "pin", "postal_code"]),
                 "road_type": item.get("road_type", "Unknown"),
                 "accidents": _to_numeric(item.get("accidents")) or 0,
                 "fatalities": _to_numeric(item.get("fatalities")) or 0,

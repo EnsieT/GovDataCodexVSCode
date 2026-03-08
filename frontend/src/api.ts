@@ -2,9 +2,24 @@ import type {
   AccidentRecord,
   AirQualityRecord,
   Insights,
+  LocationOptions,
   RainfallRecord,
   SchemeRecord
 } from "./types";
+
+interface LocationFilterQuery {
+  region?: string;
+  pincode?: string;
+}
+
+function appendLocationParams(params: URLSearchParams, query?: LocationFilterQuery) {
+  if (query?.region) {
+    params.set("region", query.region);
+  }
+  if (query?.pincode) {
+    params.set("pincode", query.pincode);
+  }
+}
 
 const baseUrl = import.meta.env.BASE_URL || "/";
 
@@ -30,36 +45,100 @@ async function requestWithFallback<T>(apiPath: string, fallbackPath: string): Pr
   }
 }
 
-export async function getLiveAirQuality(): Promise<AirQualityRecord[]> {
+export async function getLiveAirQuality(query?: LocationFilterQuery): Promise<AirQualityRecord[]> {
+  const params = new URLSearchParams();
+  appendLocationParams(params, query);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+
   const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
-    "/api/air-quality/live",
+    `/api/air-quality/live${suffix}`,
     withBase("demo/air_quality_live.json")
   );
-  return payload.records;
+
+  if (!query?.region && !query?.pincode) {
+    return payload.records;
+  }
+
+  const region = query?.region?.toLowerCase();
+  const pincode = query?.pincode?.toLowerCase();
+  return payload.records.filter((item) => {
+    const text = Object.values(item).join(" ").toLowerCase();
+    const regionOk = !region || text.includes(region);
+    const pincodeOk = !pincode || text.includes(pincode);
+    return regionOk && pincodeOk;
+  });
 }
 
-export async function getHistoricalAirQuality(): Promise<AirQualityRecord[]> {
+export async function getHistoricalAirQuality(query?: LocationFilterQuery): Promise<AirQualityRecord[]> {
+  const params = new URLSearchParams();
+  appendLocationParams(params, query);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+
   const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
-    "/api/air-quality/historical",
+    `/api/air-quality/historical${suffix}`,
     withBase("demo/air_quality_historical.json")
   );
-  return payload.records;
+
+  if (!query?.region && !query?.pincode) {
+    return payload.records;
+  }
+
+  const region = query?.region?.toLowerCase();
+  const pincode = query?.pincode?.toLowerCase();
+  return payload.records.filter((item) => {
+    const text = Object.values(item).join(" ").toLowerCase();
+    const regionOk = !region || text.includes(region);
+    const pincodeOk = !pincode || text.includes(pincode);
+    return regionOk && pincodeOk;
+  });
 }
 
-export async function getRainfallData(): Promise<RainfallRecord[]> {
+export async function getRainfallData(query?: LocationFilterQuery): Promise<RainfallRecord[]> {
+  const params = new URLSearchParams();
+  appendLocationParams(params, query);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+
   const payload = await requestWithFallback<{ records: RainfallRecord[] }>(
-    "/api/weather/rainfall",
+    `/api/weather/rainfall${suffix}`,
     withBase("demo/rainfall.json")
   );
-  return payload.records;
+
+  if (!query?.region && !query?.pincode) {
+    return payload.records;
+  }
+
+  const region = query?.region?.toLowerCase();
+  const pincode = query?.pincode?.toLowerCase();
+  return payload.records.filter((item) => {
+    const text = Object.values(item).join(" ").toLowerCase();
+    const regionOk = !region || text.includes(region);
+    const pincodeOk = !pincode || text.includes(pincode);
+    return regionOk && pincodeOk;
+  });
 }
 
-export async function getAccidentData(): Promise<AccidentRecord[]> {
+export async function getAccidentData(query?: LocationFilterQuery): Promise<AccidentRecord[]> {
+  const params = new URLSearchParams();
+  appendLocationParams(params, query);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+
   const payload = await requestWithFallback<{ records: AccidentRecord[] }>(
-    "/api/accidents",
+    `/api/accidents${suffix}`,
     withBase("demo/accidents.json")
   );
-  return payload.records;
+
+  if (!query?.region && !query?.pincode) {
+    return payload.records;
+  }
+
+  const region = query?.region?.toLowerCase();
+  const pincode = query?.pincode?.toLowerCase();
+  return payload.records.filter((item) => {
+    const text = Object.values(item).join(" ").toLowerCase();
+    const regionOk = !region || text.includes(region);
+    const pincodeOk = !pincode || text.includes(pincode);
+    return regionOk && pincodeOk;
+  });
 }
 
 export async function getSchemeData(query?: {
@@ -103,6 +182,16 @@ export async function getSchemeData(query?: {
   });
 }
 
-export async function getInsights(): Promise<Insights> {
-  return requestWithFallback<Insights>("/api/insights", withBase("demo/insights.json"));
+export async function getInsights(query?: LocationFilterQuery): Promise<Insights> {
+  const params = new URLSearchParams();
+  appendLocationParams(params, query);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+  return requestWithFallback<Insights>(`/api/insights${suffix}`, withBase("demo/insights.json"));
+}
+
+export async function getLocationOptions(): Promise<LocationOptions> {
+  return requestWithFallback<LocationOptions>(
+    "/api/location-options",
+    withBase("demo/location_options.json")
+  );
 }

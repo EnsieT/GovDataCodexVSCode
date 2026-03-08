@@ -109,6 +109,15 @@ button {
   cursor: pointer;
 }
 
+button.secondary {
+  background: #6b7280;
+}
+
+.subtle {
+  margin: 0;
+  color: #4b5563;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

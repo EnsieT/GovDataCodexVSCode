@@ -3,6 +3,8 @@ export type AQICategory = "good" | "moderate" | "unhealthy" | "unknown";
 export interface AirQualityRecord {
   station: string;
   city: string;
+  region?: string;
+  pincode?: string;
   pollutant_id: string;
   pollutant_avg: number | null;
   last_update: string;
@@ -11,6 +13,8 @@ export interface AirQualityRecord {
 
 export interface RainfallRecord {
   station: string;
+  region?: string;
+  pincode?: string;
   date: string;
   rainfall: number | null;
   temperature: number | null;
@@ -19,9 +23,16 @@ export interface RainfallRecord {
 export interface AccidentRecord {
   state: string;
   district: string;
+  region?: string;
+  pincode?: string;
   road_type: string;
   accidents: number;
   fatalities: number;
+}
+
+export interface LocationOptions {
+  regions: string[];
+  pincodes: string[];
 }
 
 export interface SchemeRecord {
