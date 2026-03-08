@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#e5e7eb"/>
+  <rect x="20" y="20" width="1160" height="660" rx="12" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="40" y="60" font-family="Arial" font-size="28" fill="#111827">Mumbai Air Quality Monitoring Stations</text>
+  <circle cx="300" cy="260" r="16" fill="#16a34a"/>
+  <circle cx="520" cy="330" r="16" fill="#ca8a04"/>
+  <circle cx="700" cy="390" r="16" fill="#dc2626"/>
+  <circle cx="450" cy="240" r="16" fill="#16a34a"/>
+  <circle cx="620" cy="210" r="16" fill="#ca8a04"/>
+  <circle cx="830" cy="280" r="16" fill="#dc2626"/>
+  <text x="40" y="650" font-family="Arial" font-size="18" fill="#374151">Legend: Green = Good, Yellow = Moderate, Red = Unhealthy</text>
+</svg>

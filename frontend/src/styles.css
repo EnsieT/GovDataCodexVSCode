@@ -1,0 +1,150 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.4;
+  font-weight: 400;
+  color: #111827;
+  background: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.summary-item {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+.summary-item h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.summary-item p {
+  margin: 2px 0 0;
+  color: #4b5563;
+}
+
+.card {
+  margin: 18px 0;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.dot.good {
+  background: #16a34a;
+}
+
+.dot.moderate {
+  background: #ca8a04;
+}
+
+.dot.unhealthy {
+  background: #dc2626;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+select,
+input,
+button {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+button {
+  background: #2563eb;
+  color: #ffffff;
+  border: 0;
+  cursor: pointer;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.slider-wrap {
+  margin-bottom: 12px;
+}
+
+.slider-wrap input {
+  width: 100%;
+}
+
+.insights-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.error {
+  color: #b91c1c;
+}
