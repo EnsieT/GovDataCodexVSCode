@@ -118,6 +118,15 @@ button.secondary {
   color: #4b5563;
 }
 
+.comparison-controls select[multiple] {
+  min-height: 120px;
+}
+
+.split-grid h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

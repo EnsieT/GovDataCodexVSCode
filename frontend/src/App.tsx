@@ -11,6 +11,7 @@ import {
 import AccidentDashboard from "./components/AccidentDashboard";
 import AQIDashboard from "./components/AQIDashboard";
 import MapView from "./components/MapView";
+import RegionComparisonDashboard from "./components/RegionComparisonDashboard";
 import RainfallDashboard from "./components/RainfallDashboard";
 import SchemeFinder from "./components/SchemeFinder";
 import type {
@@ -30,7 +31,9 @@ interface LocationFilter {
 export default function App() {
   const [liveAqi, setLiveAqi] = useState<AirQualityRecord[]>([]);
   const [historicalAqi, setHistoricalAqi] = useState<AirQualityRecord[]>([]);
+  const [allHistoricalAqi, setAllHistoricalAqi] = useState<AirQualityRecord[]>([]);
   const [rainfall, setRainfall] = useState<RainfallRecord[]>([]);
+  const [allRainfall, setAllRainfall] = useState<RainfallRecord[]>([]);
   const [accidents, setAccidents] = useState<AccidentRecord[]>([]);
   const [schemes, setSchemes] = useState<SchemeRecord[]>([]);
   const [insights, setInsights] = useState<Insights | null>(null);
@@ -85,6 +88,16 @@ export default function App() {
     getLocationOptions()
       .then((response) => setLocationOptions(response))
       .catch(() => setLocationOptions({ regions: [], pincodes: [] }));
+
+    Promise.all([getHistoricalAirQuality(), getRainfallData()])
+      .then(([histAqi, rain]) => {
+        setAllHistoricalAqi(histAqi);
+        setAllRainfall(rain);
+      })
+      .catch(() => {
+        setAllHistoricalAqi([]);
+        setAllRainfall([]);
+      });
   }, []);
 
   function applyLocationFilter() {
@@ -195,6 +208,11 @@ export default function App() {
 
       <MapView data={liveAqi} />
       <AQIDashboard liveData={liveAqi} historicalData={historicalAqi} />
+      <RegionComparisonDashboard
+        regions={locationOptions.regions}
+        historicalAirQuality={allHistoricalAqi}
+        rainfallData={allRainfall}
+      />
       <RainfallDashboard data={rainfall} />
       <AccidentDashboard data={accidents} />
       <SchemeFinder data={schemes} onFilter={handleSchemeFilter} />
