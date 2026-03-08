@@ -1,0 +1,36 @@
+{
+  "records": [
+    {
+      "station": "Bandra",
+      "city": "Mumbai",
+      "pollutant_id": "PM2.5",
+      "pollutant_avg": 55,
+      "last_update": "2026-03-05 18:00:00",
+      "aqi_category": "moderate"
+    },
+    {
+      "station": "Bandra",
+      "city": "Mumbai",
+      "pollutant_id": "PM2.5",
+      "pollutant_avg": 42,
+      "last_update": "2026-03-08 18:00:00",
+      "aqi_category": "good"
+    },
+    {
+      "station": "Chembur",
+      "city": "Mumbai",
+      "pollutant_id": "PM2.5",
+      "pollutant_avg": 155,
+      "last_update": "2026-03-05 18:00:00",
+      "aqi_category": "unhealthy"
+    },
+    {
+      "station": "Chembur",
+      "city": "Mumbai",
+      "pollutant_id": "PM2.5",
+      "pollutant_avg": 138,
+      "last_update": "2026-03-08 18:00:00",
+      "aqi_category": "unhealthy"
+    }
+  ]
+}

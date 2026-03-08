@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "scheme_name": "Pradhan Mantri Awas Yojana",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "sector": "Housing",
+      "benefits": "Interest subsidy and affordable housing support",
+      "eligibility": "EWS/LIG/MIG categories",
+      "beneficiary_type": "Urban households"
+    },
+    {
+      "scheme_name": "Ayushman Bharat",
+      "ministry": "Ministry of Health and Family Welfare",
+      "sector": "Health",
+      "benefits": "Health insurance coverage",
+      "eligibility": "Eligible families under PM-JAY criteria",
+      "beneficiary_type": "Low-income families"
+    },
+    {
+      "scheme_name": "PM SVANidhi",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "sector": "Livelihood",
+      "benefits": "Collateral-free working capital loan",
+      "eligibility": "Urban street vendors",
+      "beneficiary_type": "Street vendors"
+    }
+  ]
+}

@@ -14,23 +14,43 @@ async function request<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function requestWithFallback<T>(apiPath: string, fallbackPath: string): Promise<T> {
+  try {
+    return await request<T>(apiPath);
+  } catch {
+    return request<T>(fallbackPath);
+  }
+}
+
 export async function getLiveAirQuality(): Promise<AirQualityRecord[]> {
-  const payload = await request<{ records: AirQualityRecord[] }>("/api/air-quality/live");
+  const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
+    "/api/air-quality/live",
+    "/demo/air_quality_live.json"
+  );
   return payload.records;
 }
 
 export async function getHistoricalAirQuality(): Promise<AirQualityRecord[]> {
-  const payload = await request<{ records: AirQualityRecord[] }>("/api/air-quality/historical");
+  const payload = await requestWithFallback<{ records: AirQualityRecord[] }>(
+    "/api/air-quality/historical",
+    "/demo/air_quality_historical.json"
+  );
   return payload.records;
 }
 
 export async function getRainfallData(): Promise<RainfallRecord[]> {
-  const payload = await request<{ records: RainfallRecord[] }>("/api/weather/rainfall");
+  const payload = await requestWithFallback<{ records: RainfallRecord[] }>(
+    "/api/weather/rainfall",
+    "/demo/rainfall.json"
+  );
   return payload.records;
 }
 
 export async function getAccidentData(): Promise<AccidentRecord[]> {
-  const payload = await request<{ records: AccidentRecord[] }>("/api/accidents");
+  const payload = await requestWithFallback<{ records: AccidentRecord[] }>(
+    "/api/accidents",
+    "/demo/accidents.json"
+  );
   return payload.records;
 }
 
@@ -51,10 +71,30 @@ export async function getSchemeData(query?: {
   }
 
   const suffix = params.toString() ? `?${params.toString()}` : "";
-  const payload = await request<{ records: SchemeRecord[] }>(`/api/schemes${suffix}`);
-  return payload.records;
+  const payload = await requestWithFallback<{ records: SchemeRecord[] }>(
+    `/api/schemes${suffix}`,
+    "/demo/schemes.json"
+  );
+
+  if (!query?.sector && !query?.beneficiary_type && !query?.ministry) {
+    return payload.records;
+  }
+
+  const sector = query?.sector?.toLowerCase();
+  const beneficiaryType = query?.beneficiary_type?.toLowerCase();
+  const ministry = query?.ministry?.toLowerCase();
+
+  return payload.records.filter((item) => {
+    const sectorOk = !sector || item.sector.toLowerCase().includes(sector);
+    const beneficiaryOk =
+      !beneficiaryType ||
+      item.beneficiary_type.toLowerCase().includes(beneficiaryType) ||
+      item.eligibility.toLowerCase().includes(beneficiaryType);
+    const ministryOk = !ministry || item.ministry.toLowerCase().includes(ministry);
+    return sectorOk && beneficiaryOk && ministryOk;
+  });
 }
 
 export async function getInsights(): Promise<Insights> {
-  return request<Insights>("/api/insights");
+  return requestWithFallback<Insights>("/api/insights", "/demo/insights.json");
 }

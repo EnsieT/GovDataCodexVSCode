@@ -1,0 +1,25 @@
+{
+  "records": [
+    {
+      "state": "Maharashtra",
+      "district": "Mumbai City",
+      "road_type": "Urban",
+      "accidents": 980,
+      "fatalities": 210
+    },
+    {
+      "state": "Maharashtra",
+      "district": "Mumbai Suburban",
+      "road_type": "Urban",
+      "accidents": 1210,
+      "fatalities": 284
+    },
+    {
+      "state": "Maharashtra",
+      "district": "Thane",
+      "road_type": "Highway",
+      "accidents": 875,
+      "fatalities": 256
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "most_polluted_station": {
+    "station": "Chembur",
+    "pollutant_avg": 138,
+    "pollutant_id": "PM2.5"
+  },
+  "rainfall_spike_alert": {
+    "station": "Colaba",
+    "date": "2026-03-08",
+    "rainfall": 12.7,
+    "message": "Rainfall spike detected"
+  },
+  "accident_hotspot": {
+    "district": "Mumbai Suburban",
+    "accidents": 1210,
+    "road_type": "Urban"
+  }
+}

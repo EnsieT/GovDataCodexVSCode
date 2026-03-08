@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "station": "Colaba",
+      "date": "2026-03-01",
+      "rainfall": 2.1,
+      "temperature": 31.5
+    },
+    {
+      "station": "Colaba",
+      "date": "2026-03-03",
+      "rainfall": 6.8,
+      "temperature": 30.4
+    },
+    {
+      "station": "Colaba",
+      "date": "2026-03-05",
+      "rainfall": 4.2,
+      "temperature": 29.9
+    },
+    {
+      "station": "Colaba",
+      "date": "2026-03-08",
+      "rainfall": 12.7,
+      "temperature": 28.8
+    }
+  ]
+}
