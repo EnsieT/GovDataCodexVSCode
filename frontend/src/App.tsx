@@ -41,12 +41,14 @@ export default function App() {
   const [regionInput, setRegionInput] = useState("");
   const [pincodeInput, setPincodeInput] = useState("");
   const [activeFilter, setActiveFilter] = useState<LocationFilter>({});
+  const [filterNotice, setFilterNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   async function loadData(filter?: LocationFilter) {
     setLoading(true);
     setError(null);
+    setFilterNotice(null);
     try {
       const [aqiLiveResp, aqiHistResp, rainfallResp, accidentResp, schemesResp, insightsResp] =
         await Promise.all([
@@ -57,6 +59,31 @@ export default function App() {
           getSchemeData(),
           getInsights(filter)
         ]);
+
+      const hasData =
+        aqiLiveResp.length > 0 || aqiHistResp.length > 0 || rainfallResp.length > 0 || accidentResp.length > 0;
+
+      if (!hasData && filter?.pincode) {
+        const relaxedFilter: LocationFilter = { region: filter.region || undefined };
+        const [fallbackLive, fallbackHist, fallbackRain, fallbackAcc, fallbackInsights] = await Promise.all([
+          getLiveAirQuality(relaxedFilter),
+          getHistoricalAirQuality(relaxedFilter),
+          getRainfallData(relaxedFilter),
+          getAccidentData(relaxedFilter),
+          getInsights(relaxedFilter)
+        ]);
+
+        setLiveAqi(fallbackLive);
+        setHistoricalAqi(fallbackHist);
+        setRainfall(fallbackRain);
+        setAccidents(fallbackAcc);
+        setSchemes(schemesResp);
+        setInsights(fallbackInsights);
+        setFilterNotice(
+          `No pincode-level records were found for ${filter.pincode} in the current official dataset snapshot. Showing broader region-level results instead.`
+        );
+        return;
+      }
 
       setLiveAqi(aqiLiveResp);
       setHistoricalAqi(aqiHistResp);
@@ -204,6 +231,7 @@ export default function App() {
           <strong>{activeFilter.pincode || "Any"}</strong>. Historical views are filtered where dataset
           location fields are available.
         </p>
+        {filterNotice && <p className="warning-text">{filterNotice}</p>}
       </section>
 
       <MapView data={liveAqi} />

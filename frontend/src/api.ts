@@ -12,6 +12,25 @@ interface LocationFilterQuery {
   pincode?: string;
 }
 
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function matchesLocation<T extends object>(item: T, query?: LocationFilterQuery): boolean {
+  if (!query?.region && !query?.pincode) {
+    return true;
+  }
+
+  const text = Object.values(item).join(" ").toLowerCase();
+  const region = query?.region?.trim().toLowerCase();
+  const pincodeDigits = digitsOnly(query?.pincode || "");
+  const textDigits = digitsOnly(text);
+
+  const regionOk = !region || text.includes(region);
+  const pincodeOk = !pincodeDigits || textDigits.includes(pincodeDigits);
+  return regionOk && pincodeOk;
+}
+
 function appendLocationParams(params: URLSearchParams, query?: LocationFilterQuery) {
   if (query?.region) {
     params.set("region", query.region);
@@ -55,18 +74,7 @@ export async function getLiveAirQuality(query?: LocationFilterQuery): Promise<Ai
     withBase("demo/air_quality_live.json")
   );
 
-  if (!query?.region && !query?.pincode) {
-    return payload.records;
-  }
-
-  const region = query?.region?.toLowerCase();
-  const pincode = query?.pincode?.toLowerCase();
-  return payload.records.filter((item) => {
-    const text = Object.values(item).join(" ").toLowerCase();
-    const regionOk = !region || text.includes(region);
-    const pincodeOk = !pincode || text.includes(pincode);
-    return regionOk && pincodeOk;
-  });
+  return payload.records.filter((item) => matchesLocation(item, query));
 }
 
 export async function getHistoricalAirQuality(query?: LocationFilterQuery): Promise<AirQualityRecord[]> {
@@ -79,18 +87,7 @@ export async function getHistoricalAirQuality(query?: LocationFilterQuery): Prom
     withBase("demo/air_quality_historical.json")
   );
 
-  if (!query?.region && !query?.pincode) {
-    return payload.records;
-  }
-
-  const region = query?.region?.toLowerCase();
-  const pincode = query?.pincode?.toLowerCase();
-  return payload.records.filter((item) => {
-    const text = Object.values(item).join(" ").toLowerCase();
-    const regionOk = !region || text.includes(region);
-    const pincodeOk = !pincode || text.includes(pincode);
-    return regionOk && pincodeOk;
-  });
+  return payload.records.filter((item) => matchesLocation(item, query));
 }
 
 export async function getRainfallData(query?: LocationFilterQuery): Promise<RainfallRecord[]> {
@@ -103,18 +100,7 @@ export async function getRainfallData(query?: LocationFilterQuery): Promise<Rain
     withBase("demo/rainfall.json")
   );
 
-  if (!query?.region && !query?.pincode) {
-    return payload.records;
-  }
-
-  const region = query?.region?.toLowerCase();
-  const pincode = query?.pincode?.toLowerCase();
-  return payload.records.filter((item) => {
-    const text = Object.values(item).join(" ").toLowerCase();
-    const regionOk = !region || text.includes(region);
-    const pincodeOk = !pincode || text.includes(pincode);
-    return regionOk && pincodeOk;
-  });
+  return payload.records.filter((item) => matchesLocation(item, query));
 }
 
 export async function getAccidentData(query?: LocationFilterQuery): Promise<AccidentRecord[]> {
@@ -127,18 +113,7 @@ export async function getAccidentData(query?: LocationFilterQuery): Promise<Acci
     withBase("demo/accidents.json")
   );
 
-  if (!query?.region && !query?.pincode) {
-    return payload.records;
-  }
-
-  const region = query?.region?.toLowerCase();
-  const pincode = query?.pincode?.toLowerCase();
-  return payload.records.filter((item) => {
-    const text = Object.values(item).join(" ").toLowerCase();
-    const regionOk = !region || text.includes(region);
-    const pincodeOk = !pincode || text.includes(pincode);
-    return regionOk && pincodeOk;
-  });
+  return payload.records.filter((item) => matchesLocation(item, query));
 }
 
 export async function getSchemeData(query?: {

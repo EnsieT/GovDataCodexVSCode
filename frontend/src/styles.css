@@ -166,3 +166,8 @@ td {
 .error {
   color: #b91c1c;
 }
+
+.warning-text {
+  margin-top: 8px;
+  color: #92400e;
+}
