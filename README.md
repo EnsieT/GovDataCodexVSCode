@@ -144,6 +144,12 @@ Frontend available at:
    ```
 4. Publish `frontend/dist` on GitHub Pages.
 
+This repository includes an automated Pages workflow. Once pushed to `main`, the live frontend URL is:
+
+- `https://ensiet.github.io/GovDataCodexVSCode/`
+
+If backend endpoints are unavailable publicly, the app automatically falls back to bundled demo snapshots so the UI remains fully viewable.
+
 ### Option B: Single cloud VM/container
 
 - Run FastAPI + static frontend build behind Nginx/Caddy.
